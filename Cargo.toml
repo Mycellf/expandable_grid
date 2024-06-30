@@ -1,0 +1,18 @@
+[package]
+name = "expandable_grid"
+version = "0.1.0"
+edition = "2021"
+description = "An expandable, non-chunked 2d grid ideal for dynamic simulations"
+license = "GPL-3.0+"
+
+
+[dependencies]
+nalgebra = "0.33.0"
+rand = "0.8.5"
+rand_chacha = "0.3.1"
+
+[profile.dev]
+opt-level = 1
+
+[profile.dev.package."*"]
+opt-level = 3
