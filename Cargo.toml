@@ -2,7 +2,7 @@
 name = "expandable_grid"
 version = "0.1.0"
 edition = "2021"
-description = "An expandable, non-chunked 2d grid ideal for dynamic simulations"
+description = "A simple, expandable, non-chunked 2d grid ideal for dynamic simulations"
 license = "GPL-3.0+"
 
 
