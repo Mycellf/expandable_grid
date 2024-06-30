@@ -1,6 +1,6 @@
 [package]
 name = "expandable_grid"
-version = "0.1.3"
+version = "0.1.4"
 edition = "2021"
 description = "A simple, expandable, non-chunked 2d grid ideal for dynamic simulations"
 repository = "https://github.com/Mycellf/expandable_grid"
@@ -9,6 +9,8 @@ license = "GPL-3.0+"
 
 [dependencies]
 nalgebra = "0.33.0"
+
+[dev-dependencies]
 rand = "0.8.5"
 rand_chacha = "0.3.1"
 
