@@ -204,10 +204,6 @@ fn usize_vec_to_isize(vector: Vector2<usize>) -> Vector2<isize> {
     vector![vector.x as isize, vector.y as isize]
 }
 
-fn isize_vec_to_usize(vector: Vector2<isize>) -> Vector2<usize> {
-    vector![vector.x as usize, vector.y as usize]
-}
-
 fn isize_vec_to_usize_saturating(vector: Vector2<isize>) -> Vector2<usize> {
     vector![
         if vector.x < 0 { 0 } else { vector.x as usize },
