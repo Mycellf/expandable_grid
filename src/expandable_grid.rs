@@ -1,6 +1,10 @@
 use nalgebra::{vector, Vector2};
 
-/// Represents a 2d grid that can be expanded in any direction.
+/// Represents a 2d grid that can be expanded in any direction. It can be expanded to fit a point
+/// or box with `expand_to_fit_point` and `expand_to_fit_box`, as well as set to a specific size
+/// with `change_size`.
+///
+/// Values are accessed with signed 2d coordinates stored as a `nalgebra::Vector2<isize>`.
 pub struct ExpandableGrid<T> {
     pub size: Vector2<usize>,
     pub origin: Vector2<isize>,
@@ -8,6 +12,7 @@ pub struct ExpandableGrid<T> {
 }
 
 impl<T> ExpandableGrid<T> {
+    /// Creates a new, empty grid
     pub fn new() -> Self {
         Self {
             size: vector![0, 0],
@@ -16,6 +21,7 @@ impl<T> ExpandableGrid<T> {
         }
     }
 
+    /// Creates a new grid filled with clones of `fill`
     pub fn with_size(size: Vector2<usize>, origin: Vector2<isize>, fill: &T) -> Self
     where
         T: Clone,
@@ -29,6 +35,12 @@ impl<T> ExpandableGrid<T> {
         }
     }
 
+    /// Increases the size of the grid such that `point` is included within the bounds of the grid.
+    /// The newly created space is filled with clones of `fill`.
+    ///
+    /// Note that this is not guarenteed to expand exactly as much as is needed, rather, this
+    /// method will first expand by doubling the width or height of the grid in each direction as
+    /// nececary, and will expand further if this is not enough.
     pub fn expand_to_fit_point(&mut self, point: Vector2<isize>, fill: &T)
     where
         T: Clone,
@@ -36,6 +48,13 @@ impl<T> ExpandableGrid<T> {
         self.expand_to_fit_box(point, vector![1, 1], fill);
     }
 
+    /// Increases the size of the grid such that all elements of a box with its bottom right corner at
+    /// `box_origin`, with size `box_size` are within bounds of the grid. The newly created space
+    /// is filled with clones of `fill`.
+    ///
+    /// Note that this is not guarenteed to expand exactly as much as is needed, rather, this
+    /// method will first expand by doubling the width or height of the grid in each direction as
+    /// nececary, and will expand further if this is not enough.
     pub fn expand_to_fit_box(
         &mut self,
         box_origin: Vector2<isize>,
@@ -94,6 +113,8 @@ impl<T> ExpandableGrid<T> {
         }
     }
 
+    /// Changes the size of this grid, shifting the origin of the grid by `offset`. Any grid cells that
+    /// become out of bounds due to this are removed, and any new cells are cloned values of fill.
     pub fn change_size(&mut self, new_size: Vector2<usize>, offset: Vector2<isize>, fill: &T)
     where
         T: Clone,
@@ -147,6 +168,7 @@ impl<T> ExpandableGrid<T> {
         Some(&mut self.data[self.index_of(index)?])
     }
 
+    /// Returns the index within self.data that a value is present within.
     pub fn index_of(&self, index: Vector2<isize>) -> Option<usize> {
         let absolute_index = index - self.origin;
 
@@ -166,6 +188,7 @@ impl<T> ExpandableGrid<T> {
         }
     }
 
+    /// Returns the index within self.data that a value is present within.
     /// # Safety
     /// `index` is expected to fall within the bounds of the grid
     pub unsafe fn index_of_unchecked(&self, index: Vector2<isize>) -> usize {
