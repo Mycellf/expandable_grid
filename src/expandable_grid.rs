@@ -141,13 +141,13 @@ impl<T> ExpandableGrid<T> {
         for y in start.y..end.y {
             let new_line_start = y * new_size.x;
             let old_line_start = (y.checked_add_signed(offset.y))
-                .expect("y should never be greater than offset.y")
+                .expect("offset.y should never be less than -y")
                 * self.size.x;
 
             for x in start.x..end.x {
                 let new_index = x + new_line_start;
                 let old_index = (x.checked_add_signed(offset.x))
-                    .expect("x should never be greater than offset.x")
+                    .expect("offset.x should never be less than -x")
                     + old_line_start;
 
                 data[new_index] = self.data[old_index].clone();
