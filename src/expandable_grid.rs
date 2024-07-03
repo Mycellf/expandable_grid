@@ -1,3 +1,4 @@
+use crate::util;
 use nalgebra::{vector, Vector2};
 
 /// Represents a 2d grid that can be expanded in any direction. It can be expanded to fit a point
@@ -70,8 +71,8 @@ impl<T> ExpandableGrid<T> {
                 .take(box_size.x * box_size.y)
                 .collect();
         } else {
-            let area_corner = usize_vec_to_isize(self.size) + self.origin;
-            let box_corner = usize_vec_to_isize(box_size) + box_origin;
+            let area_corner = util::usize_vec_to_isize(self.size) + self.origin;
+            let box_corner = util::usize_vec_to_isize(box_size) + box_origin;
 
             let mut new_size = self.size;
             let mut offset = vector![0, 0];
@@ -80,14 +81,14 @@ impl<T> ExpandableGrid<T> {
             // Expand on x-axis
             if box_origin.x < self.origin.x {
                 let distance = self.origin.x - box_origin.x;
-                let distance = calculate_exponential_distance(distance, self.size.x);
+                let distance = util::calculate_exponential_distance(distance, self.size.x);
                 offset.x = -(distance as isize);
                 new_size.x += distance;
                 expanded = true;
             }
             if box_corner.x > area_corner.x {
                 let distance = box_corner.x - area_corner.x;
-                let distance = calculate_exponential_distance(distance, self.size.x);
+                let distance = util::calculate_exponential_distance(distance, self.size.x);
                 new_size.x += distance;
                 expanded = true;
             }
@@ -95,14 +96,14 @@ impl<T> ExpandableGrid<T> {
             // Expand on y-axis
             if box_origin.y < self.origin.y {
                 let distance = self.origin.y - box_origin.y;
-                let distance = calculate_exponential_distance(distance, self.size.y);
+                let distance = util::calculate_exponential_distance(distance, self.size.y);
                 offset.y = -(distance as isize);
                 new_size.y += distance;
                 expanded = true;
             }
             if box_corner.y > area_corner.y {
                 let distance = box_corner.y - area_corner.y;
-                let distance = calculate_exponential_distance(distance, self.size.y);
+                let distance = util::calculate_exponential_distance(distance, self.size.y);
                 new_size.y += distance;
                 expanded = true;
             }
@@ -125,7 +126,8 @@ impl<T> ExpandableGrid<T> {
         }
 
         // Calculate the offsets of size and size + origin
-        let relative_size = usize_vec_to_isize(new_size) - usize_vec_to_isize(self.size);
+        let relative_size =
+            util::usize_vec_to_isize(new_size) - util::usize_vec_to_isize(self.size);
         let corner_offset = offset + relative_size;
 
         // Allocate and fill array with `fill`
@@ -134,8 +136,8 @@ impl<T> ExpandableGrid<T> {
             .collect();
 
         // Calculate bounds of the old size in the coordinate space of the new size
-        let start = isize_vec_to_usize_saturating(-offset);
-        let end = new_size - isize_vec_to_usize_saturating(corner_offset);
+        let start = util::isize_vec_to_usize_saturating(-offset);
+        let end = new_size - util::isize_vec_to_usize_saturating(corner_offset);
 
         // Copy the old data to the new array
         for y in start.y..end.y {
@@ -215,21 +217,4 @@ impl<T> std::ops::IndexMut<Vector2<isize>> for ExpandableGrid<T> {
     fn index_mut(&mut self, index: Vector2<isize>) -> &mut Self::Output {
         self.get_mut(index).unwrap()
     }
-}
-
-fn calculate_exponential_distance(distance: isize, current_size: usize) -> usize {
-    let minimum_size = current_size + distance as usize;
-    let new_size = minimum_size.max(current_size * 2);
-    new_size - current_size
-}
-
-fn usize_vec_to_isize(vector: Vector2<usize>) -> Vector2<isize> {
-    vector![vector.x as isize, vector.y as isize]
-}
-
-fn isize_vec_to_usize_saturating(vector: Vector2<isize>) -> Vector2<usize> {
-    vector![
-        if vector.x < 0 { 0 } else { vector.x as usize },
-        if vector.y < 0 { 0 } else { vector.y as usize }
-    ]
 }
