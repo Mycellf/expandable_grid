@@ -6,6 +6,7 @@ use nalgebra::{vector, Vector2};
 /// with `change_size`.
 ///
 /// Values are accessed with signed 2d coordinates stored as a `nalgebra::Vector2<isize>`.
+#[derive(Clone, Debug)]
 pub struct ExpandableGrid<T> {
     pub size: Vector2<usize>,
     pub origin: Vector2<isize>,
